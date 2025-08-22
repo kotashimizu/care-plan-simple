@@ -87,6 +87,21 @@ Vercelのプロジェクト設定で以下の環境変数を追加：
 - **AI**: OpenAI API（GPT-3.5/GPT-4）
 - **デプロイ**: Vercel
 
+## GitHub Pages デプロイ
+
+このアプリケーションはGitHub Pagesにデプロイ可能です：
+
+1. リポジトリのSettings → Pages
+2. Source: GitHub Actions
+3. Next.js用のGitHub Actionsワークフローを設定
+4. 自動ビルド・デプロイが実行されます
+
+## リポジトリ情報
+
+- **GitHub**: https://github.com/kotashimizu/care-plan-simple
+- **作成日**: 2025-08-22
+- **開発者**: kota5656
+
 ## ライセンス
 
 MIT
