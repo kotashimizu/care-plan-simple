@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 個別支援計画書作成ツール（簡易版）
 
-## Getting Started
+障害者支援施設向けの個別支援計画書作成支援ツールです。
+面談内容からAIが自動的に支援計画を生成します。
 
-First, run the development server:
+## 特徴
+
+- 🏢 **3つの事業所タイプに対応**
+  - 就労継続支援A型事業所（3項目）
+  - 就労継続支援B型事業所（3項目）
+  - 生活介護事業所（3項目）
+  - 総合判断による追加項目（1項目）
+
+- ✨ **シンプルな操作**
+  - 面談内容を入力するだけ
+  - 10項目の支援内容を自動生成
+  - 各項目を個別にコピー可能
+
+- 📋 **Excel連携**
+  - タブ区切り形式でコピー
+  - Excelに直接貼り付け可能
+
+## セットアップ
+
+### 1. 環境変数の設定
+
+`.env.local`ファイルを作成し、OpenAI APIキーを設定：
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-3.5-turbo  # オプション（デフォルト: gpt-3.5-turbo）
+```
+
+### 2. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 3. 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 でアプリケーションが起動します。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## デプロイ（Vercel）
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Vercelにプロジェクトをインポート
 
-## Learn More
+1. [Vercel](https://vercel.com)にログイン
+2. 「New Project」をクリック
+3. GitHubリポジトリを選択（またはローカルプロジェクトをアップロード）
 
-To learn more about Next.js, take a look at the following resources:
+### 2. 環境変数の設定
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Vercelのプロジェクト設定で以下の環境変数を追加：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `OPENAI_API_KEY`: OpenAI APIキー
+- `OPENAI_MODEL`: 使用するモデル（オプション）
 
-## Deploy on Vercel
+### 3. デプロイ
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+自動的にビルド・デプロイが実行されます。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 使い方
+
+1. **面談内容の入力**
+   - テキストエリアに面談の文字起こしデータを貼り付け
+   - **デモ用サンプル**: [demo-samples.md](./demo-samples.md) にサンプル面談記録があります
+
+2. **支援内容の生成**
+   - 「支援内容を生成する」ボタンをクリック
+   - AIが10項目の支援内容を自動生成
+
+3. **項目のコピー**
+   - 各項目の「コピー」アイコンで個別にコピー
+   - 「Excel用に全てコピー」ボタンで一括コピー
+   - Excelに貼り付けて使用
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 14（App Router）
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS
+- **AI**: OpenAI API（GPT-3.5/GPT-4）
+- **デプロイ**: Vercel
+
+## ライセンス
+
+MIT
