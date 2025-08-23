@@ -202,7 +202,7 @@ export default function SupportPlanGenerator() {
                       </h5>
                       <button
                         onClick={() => copyToClipboard(item.goal, index * 10 + 1)}
-                        className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
+                        className="p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
                         title="到達目標をコピー"
                       >
                         {copiedIndex === index * 10 + 1 ? (
@@ -229,7 +229,7 @@ export default function SupportPlanGenerator() {
                       </h5>
                       <button
                         onClick={() => copyToClipboard(item.userRole, index * 10 + 2)}
-                        className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
+                        className="p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
                         title="本人の役割をコピー"
                       >
                         {copiedIndex === index * 10 + 2 ? (
@@ -256,7 +256,7 @@ export default function SupportPlanGenerator() {
                       </h5>
                       <button
                         onClick={() => copyToClipboard(item.supportContent, index * 10 + 3)}
-                        className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
+                        className="p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
                         title="支援内容をコピー"
                       >
                         {copiedIndex === index * 10 + 3 ? (
