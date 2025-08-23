@@ -90,7 +90,7 @@ export default function SupportPlanGenerator() {
 
 例：
 利用者さんは毎日通所したいと話されています。現在は週3回の通所ですが、体力面での不安があります。作業については軽作業から始めたいとのことです..."
-            className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm"
+            className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm text-gray-900 placeholder-gray-400"
           />
 
           {error && (
