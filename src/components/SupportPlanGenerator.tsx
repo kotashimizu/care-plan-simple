@@ -10,10 +10,17 @@ export default function SupportPlanGenerator() {
   const [error, setError] = useState('');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
+  
+  const MAX_LENGTH = 15000;
 
   const handleGenerate = async () => {
     if (!interviewRecord.trim()) {
       setError('面談内容を入力してください');
+      return;
+    }
+    
+    if (interviewRecord.length > MAX_LENGTH) {
+      setError(`文字数が上限（${MAX_LENGTH.toLocaleString()}文字）を超えています`);
       return;
     }
 
@@ -83,15 +90,32 @@ export default function SupportPlanGenerator() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             面談内容の入力
           </h3>
-          <textarea
-            value={interviewRecord}
-            onChange={(e) => setInterviewRecord(e.target.value)}
-            placeholder="面談の文字起こしデータをここに貼り付けてください...
+          <div className="relative">
+            <textarea
+              value={interviewRecord}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                if (newValue.length <= MAX_LENGTH) {
+                  setInterviewRecord(newValue);
+                  setError('');
+                } else {
+                  setError(`文字数が上限（${MAX_LENGTH.toLocaleString()}文字）を超えています`);
+                }
+              }}
+              placeholder="面談の文字起こしデータをここに貼り付けてください...
 
 例：
 利用者さんは毎日通所したいと話されています。現在は週3回の通所ですが、体力面での不安があります。作業については軽作業から始めたいとのことです..."
-            className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm text-gray-900 placeholder-gray-400"
-          />
+              className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm text-gray-900 placeholder-gray-400"
+              maxLength={MAX_LENGTH}
+            />
+            <div className="mt-2 text-right text-sm text-gray-500">
+              <span className={interviewRecord.length > MAX_LENGTH * 0.9 ? 'text-orange-500 font-medium' : ''}>
+                {interviewRecord.length.toLocaleString()}
+              </span>
+              <span className="text-gray-400"> / {MAX_LENGTH.toLocaleString()}文字</span>
+            </div>
+          </div>
 
           {error && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
