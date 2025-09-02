@@ -109,11 +109,18 @@ export default function SupportPlanGenerator() {
               className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm text-gray-900 placeholder-gray-400"
               maxLength={MAX_LENGTH}
             />
-            <div className="mt-2 text-right text-sm text-gray-500">
-              <span className={interviewRecord.length > MAX_LENGTH * 0.9 ? 'text-orange-500 font-medium' : ''}>
-                {interviewRecord.length.toLocaleString()}
-              </span>
-              <span className="text-gray-400"> / {MAX_LENGTH.toLocaleString()}文字</span>
+            <div className="mt-2 flex justify-between items-center text-sm">
+              <div className="text-gray-500">
+                <span className={interviewRecord.length > MAX_LENGTH * 0.9 ? 'text-orange-500 font-medium' : interviewRecord.length > MAX_LENGTH ? 'text-red-600 font-semibold' : ''}>
+                  文字数: {interviewRecord.length.toLocaleString()}
+                </span>
+                <span className="text-gray-400"> / {MAX_LENGTH.toLocaleString()}</span>
+              </div>
+              {interviewRecord.length > MAX_LENGTH && (
+                <span className="text-red-600 font-semibold">
+                  文字数が上限を超えています
+                </span>
+              )}
             </div>
           </div>
 
