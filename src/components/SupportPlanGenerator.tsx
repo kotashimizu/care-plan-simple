@@ -31,6 +31,30 @@ export default function SupportPlanGenerator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Seed history state and handle browser Back/Forward between views
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Seed initial state as input if not already set
+    if (!window.history.state || !('view' in window.history.state)) {
+      try {
+        window.history.replaceState({ view: 'input' }, '');
+      } catch (_) {
+        // no-op
+      }
+    }
+
+    const onPopState = (e: PopStateEvent) => {
+      const state = e.state as { view?: 'input' | 'results' } | null;
+      if (state && (state.view === 'input' || state.view === 'results')) {
+        setView(state.view);
+      }
+    };
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
   // Autosave to sessionStorage with debounce when interviewRecord changes
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -79,6 +103,11 @@ export default function SupportPlanGenerator() {
       setSupportItems(data.supportItems);
       setLastGeneratedInput(interviewRecord);
       setView('results');
+      try {
+        window.history.pushState({ view: 'results' }, '');
+      } catch (_) {
+        // ignore
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました');
     } finally {
@@ -130,7 +159,14 @@ export default function SupportPlanGenerator() {
             <h3 className="text-lg font-semibold text-gray-900">面談内容の入力</h3>
             {canReturnToPreviousResult && (
               <button
-                onClick={() => setView('results')}
+                onClick={() => {
+                  setView('results');
+                  try {
+                    window.history.pushState({ view: 'results' }, '');
+                  } catch (_) {
+                    // ignore
+                  }
+                }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors duration-200"
                 title="前の結果に戻る"
               >
@@ -176,7 +212,14 @@ export default function SupportPlanGenerator() {
           <div className="flex justify-between items-center mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setView('input')}
+                onClick={() => {
+                  // Prefer real browser back so URL/history stays consistent
+                  try {
+                    window.history.back();
+                  } catch (_) {
+                    setView('input');
+                  }
+                }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors duration-200"
                 title="入力画面に戻る"
               >
