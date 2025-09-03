@@ -8,6 +8,7 @@ const openai = new OpenAI({
 
 export interface SupportItem {
   category: 'A型事業所向け' | 'B型事業所向け' | '生活介護向け' | '総合判断';
+  title: string;
   goal: string;
   userRole: string;
   supportContent: string;

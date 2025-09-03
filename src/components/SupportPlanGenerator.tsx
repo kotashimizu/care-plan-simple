@@ -11,16 +11,9 @@ export default function SupportPlanGenerator() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
   
-  const MAX_LENGTH = 15000;
-
   const handleGenerate = async () => {
     if (!interviewRecord.trim()) {
       setError('面談内容を入力してください');
-      return;
-    }
-    
-    if (interviewRecord.length > MAX_LENGTH) {
-      setError(`文字数が上限（${MAX_LENGTH.toLocaleString()}文字）を超えています`);
       return;
     }
 
@@ -61,7 +54,7 @@ export default function SupportPlanGenerator() {
 
   const copyAllToExcel = () => {
     const excelData = supportItems.map((item, index) => 
-      `${index + 1}\t${item.goal}\t${item.userRole}\t${item.supportContent}`
+      `${item.title || `項目${index + 1}`}\t${item.goal}\t${item.userRole}\t${item.supportContent}`
     ).join('\n');
     
     navigator.clipboard.writeText(excelData).then(() => {
@@ -93,35 +86,13 @@ export default function SupportPlanGenerator() {
           <div className="relative">
             <textarea
               value={interviewRecord}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                if (newValue.length <= MAX_LENGTH) {
-                  setInterviewRecord(newValue);
-                  setError('');
-                } else {
-                  setError(`文字数が上限（${MAX_LENGTH.toLocaleString()}文字）を超えています`);
-                }
-              }}
+              onChange={(e) => setInterviewRecord(e.target.value)}
               placeholder="面談の文字起こしデータをここに貼り付けてください...
 
 例：
 利用者さんは毎日通所したいと話されています。現在は週3回の通所ですが、体力面での不安があります。作業については軽作業から始めたいとのことです..."
               className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm text-gray-900 placeholder-gray-400"
-              maxLength={MAX_LENGTH}
             />
-            <div className="mt-2 flex justify-between items-center text-sm">
-              <div className="text-gray-500">
-                <span className={interviewRecord.length > MAX_LENGTH * 0.9 ? 'text-orange-500 font-medium' : interviewRecord.length > MAX_LENGTH ? 'text-red-600 font-semibold' : ''}>
-                  文字数: {interviewRecord.length.toLocaleString()}
-                </span>
-                <span className="text-gray-400"> / {MAX_LENGTH.toLocaleString()}</span>
-              </div>
-              {interviewRecord.length > MAX_LENGTH && (
-                <span className="text-red-600 font-semibold">
-                  文字数が上限を超えています
-                </span>
-              )}
-            </div>
           </div>
 
           {error && (
@@ -195,7 +166,7 @@ export default function SupportPlanGenerator() {
                       {index + 1}
                     </span>
                     <h4 className="text-base font-semibold text-gray-900">
-                      項目 {index + 1}
+                      {item.title || `項目 ${index + 1}`}
                     </h4>
                   </div>
                   <button
