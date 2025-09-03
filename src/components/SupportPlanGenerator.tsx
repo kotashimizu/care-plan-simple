@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SupportItem } from '@/lib/openai';
 
 export default function SupportPlanGenerator() {
@@ -10,6 +10,45 @@ export default function SupportPlanGenerator() {
   const [error, setError] = useState('');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
+  
+  // Session autosave settings
+  const STORAGE_KEY = 'careplan:interviewRecord:v1';
+  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Restore from sessionStorage on mount
+  useEffect(() => {
+    try {
+      if (typeof window === 'undefined') return;
+      const saved = window.sessionStorage.getItem(STORAGE_KEY);
+      if (saved && !interviewRecord) {
+        setInterviewRecord(saved);
+      }
+    } catch (_) {
+      // Ignore storage errors silently
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Autosave to sessionStorage with debounce when interviewRecord changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      try {
+        if (interviewRecord.trim() === '') {
+          window.sessionStorage.removeItem(STORAGE_KEY);
+        } else {
+          window.sessionStorage.setItem(STORAGE_KEY, interviewRecord);
+        }
+      } catch (_) {
+        // Ignore storage errors silently
+      }
+    }, 500);
+
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [interviewRecord]);
   
   const handleGenerate = async () => {
     if (!interviewRecord.trim()) {
