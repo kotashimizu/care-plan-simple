@@ -10,6 +10,8 @@ export default function SupportPlanGenerator() {
   const [error, setError] = useState('');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
+  const [view, setView] = useState<'input' | 'results'>('input');
+  const [lastGeneratedInput, setLastGeneratedInput] = useState('');
   
   // Session autosave settings
   const STORAGE_KEY = 'careplan:interviewRecord:v1';
@@ -75,6 +77,8 @@ export default function SupportPlanGenerator() {
 
       const data = await response.json();
       setSupportItems(data.supportItems);
+      setLastGeneratedInput(interviewRecord);
+      setView('results');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました');
     } finally {
@@ -104,6 +108,9 @@ export default function SupportPlanGenerator() {
     });
   };
 
+  const canReturnToPreviousResult =
+    supportItems.length > 0 && interviewRecord === lastGeneratedInput;
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
       {/* ヘッダー */}
@@ -117,11 +124,23 @@ export default function SupportPlanGenerator() {
       </div>
 
       {/* 入力セクション */}
-      {supportItems.length === 0 && (
+      {(view === 'input' || supportItems.length === 0) && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            面談内容の入力
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">面談内容の入力</h3>
+            {canReturnToPreviousResult && (
+              <button
+                onClick={() => setView('results')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors duration-200"
+                title="前の結果に戻る"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                前の結果に戻る
+              </button>
+            )}
+          </div>
           <div className="relative">
             <textarea
               value={interviewRecord}
@@ -151,13 +170,25 @@ export default function SupportPlanGenerator() {
       )}
 
       {/* 結果セクション */}
-      {supportItems.length > 0 && (
+      {view === 'results' && supportItems.length > 0 && (
         <div>
           {/* アクションバー */}
           <div className="flex justify-between items-center mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              生成された支援内容（{supportItems.length}項目）
-            </h3>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setView('input')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors duration-200"
+                title="入力画面に戻る"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                戻る
+              </button>
+              <h3 className="text-lg font-semibold text-gray-900">
+                生成された支援内容（{supportItems.length}項目）
+              </h3>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={copyAllToExcel}
