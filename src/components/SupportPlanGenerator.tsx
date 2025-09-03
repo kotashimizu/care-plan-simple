@@ -17,6 +17,8 @@ export default function SupportPlanGenerator() {
   
   // Session autosave settings
   const STORAGE_KEY = 'careplan:interviewRecord:v1';
+  const SUPPORT_ITEMS_KEY = 'careplan:lastSupportItems:v1';
+  const LAST_INPUT_KEY = 'careplan:lastGeneratedInput:v1';
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Restore from sessionStorage on mount
@@ -26,6 +28,22 @@ export default function SupportPlanGenerator() {
       const saved = window.sessionStorage.getItem(STORAGE_KEY);
       if (saved && !interviewRecord) {
         setInterviewRecord(saved);
+      }
+      // Restore last generated input and support items for forward button availability
+      const savedItems = window.sessionStorage.getItem(SUPPORT_ITEMS_KEY);
+      const savedLastInput = window.sessionStorage.getItem(LAST_INPUT_KEY);
+      if (savedItems) {
+        try {
+          const parsed = JSON.parse(savedItems) as SupportItem[];
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setSupportItems(parsed);
+          }
+        } catch (_) {
+          // ignore parse error
+        }
+      }
+      if (savedLastInput) {
+        setLastGeneratedInput(savedLastInput);
       }
     } catch (_) {
       // Ignore storage errors silently
@@ -112,6 +130,12 @@ export default function SupportPlanGenerator() {
       const data = await response.json();
       setSupportItems(data.supportItems);
       setLastGeneratedInput(interviewRecord);
+      try {
+        window.sessionStorage.setItem(SUPPORT_ITEMS_KEY, JSON.stringify(data.supportItems));
+        window.sessionStorage.setItem(LAST_INPUT_KEY, interviewRecord);
+      } catch (_) {
+        // ignore
+      }
       setView('results');
       try {
         window.history.pushState({ view: 'results' }, '');
@@ -149,8 +173,9 @@ export default function SupportPlanGenerator() {
     });
   };
 
+  const normalize = (s: string) => s.replace(/\r\n/g, '\n').trim();
   const canReturnToPreviousResult =
-    supportItems.length > 0 && interviewRecord === lastGeneratedInput;
+    supportItems.length > 0 && normalize(interviewRecord) === normalize(lastGeneratedInput);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
