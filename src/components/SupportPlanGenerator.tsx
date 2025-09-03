@@ -12,6 +12,8 @@ export default function SupportPlanGenerator() {
   const [copiedAll, setCopiedAll] = useState(false);
   const [view, setView] = useState<'input' | 'results'>('input');
   const [lastGeneratedInput, setLastGeneratedInput] = useState('');
+  const lastViewRef = useRef<'input' | 'results'>('input');
+  const cameFromResultsRef = useRef(false);
   
   // Session autosave settings
   const STORAGE_KEY = 'careplan:interviewRecord:v1';
@@ -47,7 +49,15 @@ export default function SupportPlanGenerator() {
     const onPopState = (e: PopStateEvent) => {
       const state = e.state as { view?: 'input' | 'results' } | null;
       if (state && (state.view === 'input' || state.view === 'results')) {
-        setView(state.view);
+        const nextView = state.view;
+        // Detect if we came back from results -> input to enable forward
+        if (lastViewRef.current === 'results' && nextView === 'input') {
+          cameFromResultsRef.current = true;
+        } else {
+          cameFromResultsRef.current = false;
+        }
+        lastViewRef.current = nextView;
+        setView(nextView);
       }
     };
 
@@ -108,6 +118,8 @@ export default function SupportPlanGenerator() {
       } catch (_) {
         // ignore
       }
+      lastViewRef.current = 'results';
+      cameFromResultsRef.current = false;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました');
     } finally {
@@ -160,20 +172,31 @@ export default function SupportPlanGenerator() {
             {canReturnToPreviousResult && (
               <button
                 onClick={() => {
+                  if (cameFromResultsRef.current) {
+                    // We previously navigated back from results; prefer real forward
+                    try {
+                      window.history.forward();
+                      cameFromResultsRef.current = false;
+                      return;
+                    } catch (_) {
+                      // fall through to manual switch
+                    }
+                  }
                   setView('results');
                   try {
                     window.history.pushState({ view: 'results' }, '');
                   } catch (_) {
                     // ignore
                   }
+                  lastViewRef.current = 'results';
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors duration-200"
-                title="前の結果に戻る"
+                title="進む（結果へ）"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                前の結果に戻る
+                進む（結果へ）
               </button>
             )}
           </div>
