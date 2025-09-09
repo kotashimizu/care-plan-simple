@@ -45,6 +45,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Vercel Edge Runtime設定（オプション）
-// export const runtime = 'edge';
